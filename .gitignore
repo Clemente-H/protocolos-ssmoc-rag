@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+venv/
+.venv/
+
+# Data
+.env
+pdfs/
+data/chroma_db/
+data/parsed/
+
+# IDE
+.vscode/
+.idea/
