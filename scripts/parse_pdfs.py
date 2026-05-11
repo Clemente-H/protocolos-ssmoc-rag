@@ -42,7 +42,7 @@ def parse_pdf(pdf_path: Path) -> list[dict]:
             "metadata": {
                 "source_file": pdf_path.name,
                 "original_url": f"{BASE_URL}{pdf_path.name}",
-                "page": page.number,
+                "page": page.page_number,
             },
         })
 
