@@ -36,7 +36,7 @@ body {
   color: #fff;
   display: flex;
   align-items: center;
-  padding: 0 20px;
+  padding: 0 16px;
   gap: 12px;
   flex-shrink: 0;
 }
@@ -45,6 +45,7 @@ body {
   font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.2px;
+  flex: 1;
 }
 
 .app-header .subtitle {
@@ -52,11 +53,39 @@ body {
   color: rgba(255,255,255,0.6);
 }
 
+/* Toggle sidebar */
+.sidebar-toggle {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 3px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.sidebar-toggle:hover { background: rgba(255,255,255,0.15); }
+
+/* Mobile chat button — oculto en desktop */
+.mobile-chat-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
 /* ── Layout ── */
 .layout {
   display: flex;
   flex: 1;
   overflow: hidden;
+  position: relative;
 }
 
 /* ── Sidebar ── */
@@ -68,6 +97,14 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  transition: width 0.2s ease, opacity 0.2s ease;
+}
+
+/* Sidebar colapsado */
+.sidebar.collapsed {
+  width: 0;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .sidebar-search {
@@ -86,17 +123,13 @@ body {
   color: var(--texto);
   outline: none;
 }
-
-.sidebar-search input:focus {
-  border-color: var(--salvia);
-}
+.sidebar-search input:focus { border-color: var(--salvia); }
 
 .sidebar-results {
   flex: 1;
   overflow-y: auto;
 }
 
-/* Estado vacío del sidebar */
 .sidebar-empty {
   padding: 32px 16px;
   text-align: center;
@@ -104,12 +137,7 @@ body {
   font-size: 13px;
   line-height: 1.7;
 }
-
-.sidebar-empty .icon {
-  font-size: 28px;
-  display: block;
-  margin-bottom: 8px;
-}
+.sidebar-empty .icon { font-size: 28px; display: block; margin-bottom: 8px; }
 
 /* Resultado individual */
 .result-item {
@@ -118,14 +146,10 @@ body {
   border-left: 3px solid transparent;
   border-bottom: 1px solid var(--borde-sutil);
 }
-
-.result-item:hover {
-  background: rgba(90, 97, 72, 0.08);
-}
-
+.result-item:hover { background: rgba(90,97,72,0.08); }
 .result-item.active {
   border-left-color: var(--terracota);
-  background: rgba(202, 101, 60, 0.07);
+  background: rgba(202,101,60,0.07);
 }
 
 .result-doc {
@@ -136,13 +160,7 @@ body {
   letter-spacing: 0.4px;
   margin-bottom: 1px;
 }
-
-.result-page {
-  font-size: 11px;
-  color: var(--salvia);
-  margin-bottom: 4px;
-}
-
+.result-page   { font-size: 11px; color: var(--salvia); margin-bottom: 4px; }
 .result-excerpt {
   font-size: 12px;
   color: #444;
@@ -152,9 +170,8 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-
 .result-excerpt mark {
-  background: rgba(202, 101, 60, 0.25);
+  background: rgba(202,101,60,0.25);
   color: inherit;
   padding: 0 1px;
   border-radius: 2px;
@@ -168,6 +185,7 @@ body {
   overflow: hidden;
   background: var(--pergamino);
   border-right: 1px solid var(--borde);
+  min-width: 0;
 }
 
 .doc-header {
@@ -176,25 +194,23 @@ body {
   flex-shrink: 0;
   background: var(--pergamino);
 }
-
-.doc-header h2 {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--texto);
-}
-
-.doc-header .doc-meta {
-  font-size: 12px;
-  color: var(--salvia);
-  margin-top: 3px;
-}
-
-.doc-header a {
-  color: var(--terracota);
-  text-decoration: none;
-}
-
+.doc-header h2    { font-size: 14px; font-weight: 600; }
+.doc-header .doc-meta { font-size: 12px; color: var(--salvia); margin-top: 3px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.doc-header a     { color: var(--terracota); text-decoration: none; }
 .doc-header a:hover { text-decoration: underline; }
+
+/* Botón "Consultar" en doc header — oculto en desktop */
+.mobile-goto-chat {
+  display: none;
+  background: var(--terracota);
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
 
 .doc-content {
   flex: 1;
@@ -202,12 +218,10 @@ body {
   padding: 28px 36px;
 }
 
-/* Página individual dentro del doc */
 .page-block {
   margin-bottom: 36px;
   scroll-margin-top: 20px;
 }
-
 .page-label {
   font-size: 10px;
   font-weight: 700;
@@ -218,24 +232,8 @@ body {
   padding-bottom: 8px;
   border-bottom: 1px solid var(--borde);
 }
+.page-label.highlight { color: var(--terracota); border-bottom-color: var(--terracota); }
 
-.page-label.highlight {
-  color: var(--terracota);
-  border-bottom-color: var(--terracota);
-}
-
-.page-block h1 { font-size: 16px; margin: 14px 0 8px; }
-.page-block h2 { font-size: 15px; margin: 14px 0 6px; }
-.page-block h3 { font-size: 13px; font-weight: 600; margin: 12px 0 5px; }
-.page-block p  { font-size: 13px; line-height: 1.75; color: #333; margin-bottom: 8px; }
-.page-block ul,
-.page-block ol { padding-left: 20px; margin-bottom: 10px; }
-.page-block li { font-size: 13px; line-height: 1.7; color: #333; }
-.page-block table { border-collapse: collapse; width: 100%; margin-bottom: 12px; font-size: 12px; }
-.page-block th { background: var(--beige); padding: 6px 10px; border: 1px solid var(--borde); text-align: left; font-weight: 600; }
-.page-block td { padding: 5px 10px; border: 1px solid var(--borde); vertical-align: top; }
-
-/* Landing (sin doc seleccionado) */
 .doc-landing {
   flex: 1;
   display: flex;
@@ -247,7 +245,6 @@ body {
   text-align: center;
   padding: 40px;
 }
-
 .doc-landing .icon { font-size: 36px; }
 .doc-landing p { font-size: 14px; line-height: 1.7; max-width: 320px; }
 
@@ -266,17 +263,27 @@ body {
   border-bottom: 1px solid var(--borde);
   flex-shrink: 0;
 }
-
 .chat-header .title {
   font-size: 13px;
   font-weight: 600;
   color: var(--texto);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
+.chat-header .context { font-size: 11px; color: var(--salvia); margin-top: 2px; }
 
-.chat-header .context {
+/* Botón volver al doc — oculto en desktop */
+.mobile-back-btn {
+  display: none;
+  background: none;
+  border: 1px solid var(--borde);
+  border-radius: 3px;
+  padding: 3px 8px;
   font-size: 11px;
   color: var(--salvia);
-  margin-top: 2px;
+  cursor: pointer;
+  font-family: inherit;
 }
 
 .chat-messages {
@@ -287,8 +294,6 @@ body {
   flex-direction: column;
   gap: 16px;
 }
-
-/* Placeholder cuando no hay doc */
 .chat-placeholder {
   flex: 1;
   display: flex;
@@ -301,9 +306,7 @@ body {
   line-height: 1.7;
 }
 
-/* Mensajes */
 .msg { display: flex; flex-direction: column; gap: 4px; }
-
 .msg-role {
   font-size: 10px;
   font-weight: 700;
@@ -311,7 +314,6 @@ body {
   letter-spacing: 0.5px;
   color: var(--salvia);
 }
-
 .msg.user { align-items: flex-end; }
 .msg.user .msg-role { text-align: right; }
 
@@ -322,24 +324,10 @@ body {
   border-radius: 3px;
   max-width: 100%;
 }
+.msg.assistant .msg-bubble { background: var(--beige); color: var(--texto); }
+.msg.user .msg-bubble      { background: var(--verde); color: #fff; }
+.msg-citation { font-size: 11px; color: var(--terracota); padding: 0 2px; }
 
-.msg.assistant .msg-bubble {
-  background: var(--beige);
-  color: var(--texto);
-}
-
-.msg.user .msg-bubble {
-  background: var(--verde);
-  color: #fff;
-}
-
-.msg-citation {
-  font-size: 11px;
-  color: var(--terracota);
-  padding: 0 2px;
-}
-
-/* Input chat */
 .chat-input-area {
   padding: 12px;
   border-top: 1px solid var(--borde);
@@ -348,7 +336,6 @@ body {
   gap: 8px;
   flex-shrink: 0;
 }
-
 .chat-input-area textarea {
   width: 100%;
   border: 1px solid var(--borde);
@@ -362,12 +349,7 @@ body {
   background: var(--beige);
   color: var(--texto);
 }
-
-.chat-input-area textarea:focus {
-  border-color: var(--salvia);
-  background: #fff;
-}
-
+.chat-input-area textarea:focus { border-color: var(--salvia); background: #fff; }
 .chat-input-area button {
   align-self: flex-end;
   background: var(--verde);
@@ -379,17 +361,16 @@ body {
   font-family: inherit;
   cursor: pointer;
 }
-
-.chat-input-area button:hover { background: #006622; }
+.chat-input-area button:hover    { background: #006622; }
 .chat-input-area button:disabled { background: var(--salvia); cursor: default; }
 
-/* ── Scrollbars sutiles ── */
+/* ── Scrollbars ── */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--borde); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--salvia); }
 
-/* ── Loading spinner ── */
+/* ── Spinner ── */
 .spinner {
   display: inline-block;
   width: 14px; height: 14px;
@@ -400,5 +381,58 @@ body {
   vertical-align: middle;
   margin-right: 6px;
 }
-
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Mobile (≤ 700px) ── */
+@media (max-width: 700px) {
+  .app-header .subtitle { display: none; }
+  .mobile-chat-btn  { display: block; }
+  .mobile-goto-chat { display: inline-block; }
+  .mobile-back-btn  { display: block; }
+
+  .layout { position: relative; }
+
+  /* Sidebar se convierte en drawer flotante */
+  .sidebar {
+    position: absolute;
+    top: 0; left: 0;
+    height: 100%;
+    z-index: 100;
+    width: 88vw;
+    max-width: 320px;
+    box-shadow: 4px 0 16px rgba(0,0,0,0.15);
+    transition: transform 0.22s ease, opacity 0.22s ease;
+  }
+  .sidebar.collapsed {
+    transform: translateX(-105%);
+    opacity: 1;
+    width: 88vw;
+    pointer-events: none;
+  }
+
+  /* Overlay para cerrar el drawer */
+  .sidebar-overlay {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.3);
+    z-index: 99;
+  }
+  .sidebar-overlay.visible { display: block; }
+
+  /* Doc y chat ocupan todo el ancho, se alternan */
+  .doc-panel, .chat-panel {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    transition: transform 0.22s ease;
+  }
+
+  .chat-panel {
+    transform: translateX(100%);
+  }
+
+  /* Cuando el chat está activo en mobile */
+  .mobile-chat-active .doc-panel  { transform: translateX(-100%); }
+  .mobile-chat-active .chat-panel { transform: translateX(0); }
+}

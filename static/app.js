@@ -7,12 +7,15 @@ const state = {
   activeDocLabel: null,
   chatHistory: [],
   searchDebounce: null,
-  allDocs: null,       // cache de /api/documents
+  allDocs: null,
+  sidebarOpen: true,
 };
 
 // ── Elementos DOM ────────────────────────────────────────────────────────────
 const els = {
   searchInput:     document.getElementById("search-input"),
+  sidebar:         document.getElementById("sidebar"),
+  sidebarToggle:   document.getElementById("sidebar-toggle"),
   sidebarResults:  document.getElementById("sidebar-results"),
   docHeader:       document.getElementById("doc-header"),
   docTitle:        document.getElementById("doc-title"),
@@ -20,6 +23,7 @@ const els = {
   docPdfLink:      document.getElementById("doc-pdf-link"),
   docLanding:      document.getElementById("doc-landing"),
   docContent:      document.getElementById("doc-content"),
+  layout:          document.querySelector(".layout"),
   chatContext:     document.getElementById("chat-context"),
   chatPlaceholder: document.getElementById("chat-placeholder"),
   chatMessages:    document.getElementById("chat-messages"),
@@ -27,6 +31,52 @@ const els = {
   chatInput:       document.getElementById("chat-input"),
   chatSend:        document.getElementById("chat-send"),
 };
+
+// ── Sidebar toggle ────────────────────────────────────────────────────────────
+function isMobile() { return window.innerWidth <= 700; }
+
+// En mobile el sidebar arranca colapsado (drawer oculto)
+if (isMobile()) els.sidebar.classList.add("collapsed");
+
+els.sidebarToggle.addEventListener("click", () => {
+  if (isMobile()) {
+    openMobileSidebar();
+  } else {
+    state.sidebarOpen = !state.sidebarOpen;
+    els.sidebar.classList.toggle("collapsed", !state.sidebarOpen);
+  }
+});
+
+// ── Mobile: overlay para cerrar el drawer ────────────────────────────────────
+const overlay = document.createElement("div");
+overlay.className = "sidebar-overlay";
+document.querySelector(".layout").appendChild(overlay);
+overlay.addEventListener("click", closeMobileSidebar);
+
+function openMobileSidebar() {
+  els.sidebar.classList.remove("collapsed");
+  overlay.classList.add("visible");
+}
+function closeMobileSidebar() {
+  els.sidebar.classList.add("collapsed");
+  overlay.classList.remove("visible");
+}
+
+// Mobile: botón chat y botón volver
+document.getElementById("mobile-chat-btn").addEventListener("click", () => {
+  els.layout.classList.add("mobile-chat-active");
+});
+document.getElementById("mobile-back-btn").addEventListener("click", () => {
+  els.layout.classList.remove("mobile-chat-active");
+});
+document.getElementById("mobile-goto-chat")?.addEventListener("click", () => {
+  els.layout.classList.add("mobile-chat-active");
+});
+
+// En mobile, cerrar sidebar al seleccionar doc
+function maybeCloseMobileSidebar() {
+  if (isMobile()) closeMobileSidebar();
+}
 
 // ── Init: cargar lista de documentos ─────────────────────────────────────────
 async function init() {
@@ -105,6 +155,7 @@ function renderResults(results, query) {
 // ── Carga de documento ────────────────────────────────────────────────────────
 async function loadDoc(docId, scrollToPage = null) {
   setActiveInSidebar(docId);
+  maybeCloseMobileSidebar();
 
   if (state.activeDocId === docId) {
     if (scrollToPage) scrollToPageBlock(scrollToPage);

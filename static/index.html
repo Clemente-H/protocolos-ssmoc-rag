@@ -10,14 +10,17 @@
 
   <!-- ── Header ── -->
   <header class="app-header">
+    <button class="sidebar-toggle" id="sidebar-toggle" title="Mostrar/ocultar búsqueda">☰</button>
     <h1>Protocolos SSMOC</h1>
     <span class="subtitle">Referencia y Contrarreferencia · Red Occidente</span>
+    <!-- Mobile: botón para abrir chat -->
+    <button class="mobile-chat-btn" id="mobile-chat-btn" title="Abrir asistente">💬</button>
   </header>
 
   <div class="layout">
 
     <!-- ── Sidebar: buscador + resultados BM25 ── -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
       <div class="sidebar-search">
         <input
           type="text"
@@ -35,12 +38,14 @@
     </aside>
 
     <!-- ── Panel central: documento ── -->
-    <main class="doc-panel">
+    <main class="doc-panel" id="doc-panel">
       <div id="doc-header" class="doc-header" style="display:none">
         <h2 id="doc-title"></h2>
         <div class="doc-meta">
           <span id="doc-meta-text"></span> ·
           <a id="doc-pdf-link" href="#" target="_blank">Ver PDF original ↗</a>
+          <!-- Mobile: link para ir al chat -->
+          <button class="mobile-goto-chat" id="mobile-goto-chat">💬 Consultar</button>
         </div>
       </div>
 
@@ -53,9 +58,13 @@
     </main>
 
     <!-- ── Panel derecho: chat ── -->
-    <aside class="chat-panel">
+    <aside class="chat-panel" id="chat-panel">
       <div class="chat-header">
-        <div class="title">Asistente</div>
+        <div class="title">
+          Asistente
+          <!-- Mobile: botón volver al doc -->
+          <button class="mobile-back-btn" id="mobile-back-btn">← Doc</button>
+        </div>
         <div class="context" id="chat-context">Selecciona un protocolo para comenzar</div>
       </div>
 
