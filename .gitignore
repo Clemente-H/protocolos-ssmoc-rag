@@ -10,7 +10,6 @@ venv/
 .env
 pdfs/
 data/parsed/json/
-data/parsed/parsed_documents.json
 
 # chroma_db y markdowns SÍ van al repo (necesarios en Railway)
 # data/chroma_db/

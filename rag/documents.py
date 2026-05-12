@@ -8,8 +8,54 @@ del mismo PDF escaneado) bajo un único identificador con nombre legible.
 from dataclasses import dataclass, field
 from pathlib import Path
 
-BASE_URL = "https://ssmoc.redsalud.gob.cl/medicos/"
+_SSMOC = "https://ssmoc.redsalud.gob.cl"
 MD_DIR = Path(__file__).parent.parent / "data" / "parsed" / "markdown"
+
+# URLs reales tal como están en el servidor (extraídas de download_pdfs.py)
+_URL_MAP: dict[str, str] = {
+    Path(p).name: _SSMOC + p for p in [
+        "/wp-content/uploads/2025/10/CRITERIOS-DE-REFERENCIA-DIABETES-2017.-ord.pdf",
+        "/wp-content/uploads/2025/10/MANUAL-CONSOLIDADO-PATOLOGIAS-GES-V.1-2025.-firmas.pdf",
+        "/wp-content/uploads/2025/10/MANUAL-CONSOLIDADO-PATOLOGIAS-GES-V.1-2025.-res.pdf",
+        "/wp-content/uploads/2025/10/PROT-PACIENTE-CON-OBESIDAD-CANDIDATO-A-CIRUGIA-BARIATRICA-V.1-2024.pdf",
+        "/wp-content/uploads/2025/10/PROT-ALTO-RIESGO-OBSTETRICO-V.1-2025-2.pdf",
+        "/wp-content/uploads/2025/10/PROT-AMENORREA-2017.pdf",
+        "/wp-content/uploads/2025/10/PROT-ATENCION-DE-VICTIMAS-DE-VIOLENCIA-SEXUAL-2024.pdf",
+        "/wp-content/uploads/2025/10/PROT-CARDIOLOGIA-ADULTO-V.2-2021-2.pdf",
+        "/wp-content/uploads/2025/10/PROT-CATEGORIZACION-DE-PACIENTES-EN-UNIDADES-DE-EMERGENCIA-2018.pdf",
+        "/wp-content/uploads/2025/10/PROT-ENDOCRINO-ADULTO-V.2-2019-2.pdf",
+        "/wp-content/uploads/2025/10/PROT-GASTRO-ADULTO-V.2-2019-2.pdf",
+        "/wp-content/uploads/2025/10/PROT-GENERACION-DE-LA-MACULA-DEL-OJO-2018.pdf",
+        "/wp-content/uploads/2025/10/PROT-GLAUCOMA-2018.pdf",
+        "/wp-content/uploads/2025/10/PROT-HEMATOLOGIA-ADULTO-V.1-2023-2.pdf",
+        "/wp-content/uploads/2025/10/PROT-HIPERTIROIDISMO-2017.pdf",
+        "/wp-content/uploads/2025/10/PROT-HOMBRO-DOLOROSO-2018.pdf",
+        "/wp-content/uploads/2025/10/PROT-NEFROLOGIA-ADULTO-V.1-2023-2.pdf",
+        "/wp-content/uploads/2025/10/PROT-NEUROLOGIA-ADULTO-V.1-2018-2.pdf",
+        "/wp-content/uploads/2025/10/PROT-OFTALMOLOGIA-V.1-2019-2.pdf",
+        "/wp-content/uploads/2025/11/PROTOCOLO-REFCON-2024-res.pdf",
+        "/wp-content/uploads/2025/10/PROT-REHABILITACION-AVE-2018.pdf",
+        "/wp-content/uploads/2025/10/PROT-REHABILITACION-INTEGRAL-V.1-2025.res_.pdf",
+        "/wp-content/uploads/2025/10/PROT-SOSPECHA-DE-INTOXICACION-POR-ORGANOFOSFORADOS-2018.pdf",
+        "/wp-content/uploads/2025/10/PROT-TRASTORNO-DE-CONDUCTA-2017.pdf",
+        "/wp-content/uploads/2025/10/PROT-UROLOGIA-PEDIATRICA-V.1.res-2025.pdf",
+        "/wp-content/uploads/2025/10/MANUAL-CONSOLIDADO-PATOLOGIAS-GES-2025.-firmas-1.pdf",
+        "/wp-content/uploads/2025/10/MANUAL-CONSOLIDADO-PATOLOGIAS-GES-2025.-res-1.pdf",
+        "/wp-content/uploads/2025/10/PROT-ALTO-RIESGO-OBSTETRICO-V.1-2025-1.pdf",
+        "/wp-content/uploads/2025/10/PROT-CARDIOLOGIA-ADULTO-V.2-2021-1.pdf",
+        "/wp-content/uploads/2025/10/PROT-ENDOCRINO-ADULTO-V.2-2019-1.pdf",
+        "/wp-content/uploads/2025/10/PROT-GASTRO-ADULTO-V.2-2019-1.pdf",
+        "/wp-content/uploads/2025/10/PROT-HEMATOLOGIA-ADULTO-V.1-2023-1.pdf",
+        "/wp-content/uploads/2025/10/PROT-NEFROLOGIA-ADULTO-V.1-2023-1.pdf",
+        "/wp-content/uploads/2025/10/PROT-NEUROLOGIA-ADULTO-V.1-2018-1.pdf",
+        "/wp-content/uploads/2025/10/PROT-OFTALMOLOGIA-V.1-2019-1.pdf",
+        "/wp-content/uploads/2025/10/PROT-REFCON-V.2-2024-1.pdf",
+        "/wp-content/uploads/2025/10/PROT-REHABILITACION-INTEGRAL-2025.res_-1.pdf",
+        "/wp-content/uploads/2025/10/PROTOCOLO-PACIENTE-CON-OBESIDAD-CANDIDATO-A-CIRUGIA-BARIATRICA-V.1-2024-1.pdf",
+        "/wp-content/uploads/2025/11/PROTOCOLO-GESTION-DE-TIEMPO-DE-ESPERA-MINSAL-2025-res.pdf",
+        "/wp-content/uploads/2025/11/PROT-OTORRINO-2025.pdf",
+    ]
+}
 
 
 @dataclass
@@ -26,7 +72,9 @@ class Documento:
 
     @property
     def display_url(self) -> str:
-        return self.url or (BASE_URL + self.filenames[0])
+        if self.url:
+            return self.url
+        return _URL_MAP.get(self.filenames[0], _SSMOC + "/medicos/" + self.filenames[0])
 
 
 DOCUMENTOS: list[Documento] = [

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Protocolos SSMOC</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <!-- ── Header ── -->
+  <header class="app-header">
+    <h1>Protocolos SSMOC</h1>
+    <span class="subtitle">Referencia y Contrarreferencia · Red Occidente</span>
+  </header>
+
+  <div class="layout">
+
+    <!-- ── Sidebar: buscador + resultados BM25 ── -->
+    <aside class="sidebar">
+      <div class="sidebar-search">
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Buscar en protocolos..."
+          autocomplete="off"
+        />
+      </div>
+      <div class="sidebar-results" id="sidebar-results">
+        <div class="sidebar-empty">
+          <span class="icon">🔍</span>
+          Escribe una palabra clave para buscar en todos los protocolos.
+        </div>
+      </div>
+    </aside>
+
+    <!-- ── Panel central: documento ── -->
+    <main class="doc-panel">
+      <div id="doc-header" class="doc-header" style="display:none">
+        <h2 id="doc-title"></h2>
+        <div class="doc-meta">
+          <span id="doc-meta-text"></span> ·
+          <a id="doc-pdf-link" href="#" target="_blank">Ver PDF original ↗</a>
+        </div>
+      </div>
+
+      <div id="doc-landing" class="doc-landing">
+        <span class="icon">📋</span>
+        <p>Busca un término clínico en el panel izquierdo y selecciona un resultado para ver el protocolo completo.</p>
+      </div>
+
+      <div id="doc-content" class="doc-content" style="display:none"></div>
+    </main>
+
+    <!-- ── Panel derecho: chat ── -->
+    <aside class="chat-panel">
+      <div class="chat-header">
+        <div class="title">Asistente</div>
+        <div class="context" id="chat-context">Selecciona un protocolo para comenzar</div>
+      </div>
+
+      <div id="chat-placeholder" class="chat-placeholder">
+        Selecciona un protocolo para hacer preguntas sobre él.
+      </div>
+
+      <div id="chat-messages" class="chat-messages" style="display:none"></div>
+
+      <div id="chat-input-area" class="chat-input-area" style="display:none">
+        <textarea
+          id="chat-input"
+          placeholder="Pregunta sobre este protocolo..."
+        ></textarea>
+        <button id="chat-send">Enviar</button>
+      </div>
+    </aside>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked@13/marked.min.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>
