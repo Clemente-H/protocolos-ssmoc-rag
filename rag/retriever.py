@@ -1,24 +1,20 @@
-from rag.embed import load_index
+from rag.embed import load_index, retrieve
+
+_collection = None
 
 
-def retrieve_chunks(query: str, top_k: int = 6) -> list[dict]:
-    """Retrieve the most relevant chunks from the index for a given query.
+def _get_collection():
+    global _collection
+    if _collection is None:
+        _collection = load_index()
+    return _collection
 
-    Returns raw context only — no LLM call.
+
+def retrieve_chunks(query: str, top_k: int = 6, source_files: list[str] | None = None) -> list[dict]:
+    """Recupera los chunks más relevantes para una query.
+
+    source_files: lista de filenames para restringir la búsqueda a un documento.
+    Si es None, busca en todo el corpus.
     """
-    index = load_index()
-    retriever = index.as_retriever(similarity_top_k=top_k)
-    nodes = retriever.retrieve(query)
-
-    chunks = []
-    for node in nodes:
-        meta = node.node.metadata
-        chunks.append({
-            "text": node.node.text,
-            "source_file": meta.get("source_file", "desconocido"),
-            "original_url": meta.get("original_url", ""),
-            "page": meta.get("page", "?"),
-            "score": round(node.score, 4),
-        })
-
-    return chunks
+    collection = _get_collection()
+    return retrieve(query, collection, top_k=top_k, source_files=source_files)

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Protocolos SSMOC — Mockup</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 14px;
+      background: #f5f5f5;
+      color: #1a1a1a;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Topbar ── */
+    header {
+      background: #fff;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 0 20px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    header h1 { font-size: 15px; font-weight: 600; color: #1a1a1a; }
+    header span { font-size: 13px; color: #888; }
+
+    /* ── Layout principal ── */
+    .layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 280px;
+      flex-shrink: 0;
+      background: #fff;
+      border-right: 1px solid #e0e0e0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-search {
+      padding: 12px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .sidebar-search input {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #d0d0d0;
+      border-radius: 4px;
+      font-size: 13px;
+      outline: none;
+      background: #fafafa;
+    }
+    .sidebar-search input:focus { border-color: #555; background: #fff; }
+
+    .sidebar-results {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+    }
+
+    .result-item {
+      padding: 10px 14px;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+    }
+    .result-item:hover { background: #f5f5f5; }
+    .result-item.active {
+      border-left-color: #1a1a1a;
+      background: #f0f0f0;
+    }
+
+    .result-doc {
+      font-size: 11px;
+      font-weight: 600;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-bottom: 2px;
+    }
+    .result-page { font-size: 11px; color: #999; margin-bottom: 4px; }
+    .result-excerpt {
+      font-size: 12px;
+      color: #333;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .result-excerpt mark {
+      background: #ffe082;
+      padding: 0 1px;
+      border-radius: 2px;
+    }
+
+    .sidebar-empty {
+      padding: 24px 16px;
+      color: #aaa;
+      font-size: 13px;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    /* ── Doc viewer ── */
+    .doc-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: #fff;
+      border-right: 1px solid #e0e0e0;
+    }
+
+    .doc-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid #e0e0e0;
+      flex-shrink: 0;
+    }
+    .doc-header h2 { font-size: 15px; font-weight: 600; }
+    .doc-header .doc-meta { font-size: 12px; color: #888; margin-top: 3px; }
+    .doc-header a { color: #555; text-decoration: underline; font-size: 12px; }
+
+    .doc-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px 32px;
+      max-width: 760px;
+    }
+
+    .page-block { margin-bottom: 32px; }
+
+    .page-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .page-block h3 { font-size: 14px; font-weight: 600; margin: 12px 0 6px; }
+    .page-block p  { font-size: 13px; line-height: 1.7; color: #333; margin-bottom: 8px; }
+    .page-block ul { padding-left: 18px; margin-bottom: 8px; }
+    .page-block li { font-size: 13px; line-height: 1.7; color: #333; }
+
+    .doc-placeholder {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #bbb;
+      font-size: 14px;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .doc-placeholder .icon { font-size: 32px; }
+
+    /* ── Chat panel ── */
+    .chat-panel {
+      width: 320px;
+      flex-shrink: 0;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 13px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .chat-context {
+      font-size: 11px;
+      color: #888;
+      font-weight: 400;
+      margin-top: 2px;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .msg { display: flex; flex-direction: column; gap: 4px; }
+    .msg-role {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #aaa;
+    }
+    .msg-bubble {
+      font-size: 13px;
+      line-height: 1.6;
+      color: #1a1a1a;
+      padding: 10px 12px;
+      border-radius: 4px;
+      background: #f5f5f5;
+    }
+    .msg.assistant .msg-bubble { background: #f5f5f5; }
+    .msg.user .msg-bubble { background: #1a1a1a; color: #fff; }
+    .msg.user .msg-role { text-align: right; }
+    .msg.user { align-items: flex-end; }
+
+    .msg-citation {
+      font-size: 11px;
+      color: #888;
+      padding: 0 2px;
+    }
+
+    .chat-input-area {
+      padding: 12px;
+      border-top: 1px solid #e0e0e0;
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .chat-input-area textarea {
+      flex: 1;
+      border: 1px solid #d0d0d0;
+      border-radius: 4px;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-family: inherit;
+      resize: none;
+      height: 68px;
+      outline: none;
+      background: #fafafa;
+    }
+    .chat-input-area textarea:focus { border-color: #555; background: #fff; }
+
+    .chat-input-area button {
+      background: #1a1a1a;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 0 14px;
+      font-size: 13px;
+      cursor: pointer;
+      font-family: inherit;
+      align-self: flex-end;
+      height: 36px;
+    }
+    .chat-input-area button:hover { background: #333; }
+
+    .chat-placeholder {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #bbb;
+      font-size: 13px;
+      text-align: center;
+      padding: 24px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Protocolos SSMOC</h1>
+  <span>Referencia y Contrarreferencia · Red Occidente</span>
+</header>
+
+<div class="layout">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar-search">
+      <input type="text" placeholder="Buscar en protocolos..." id="search-input" value="criterios derivación cardio" />
+    </div>
+
+    <div class="sidebar-results" id="results">
+
+      <!-- Resultado 1 — activo -->
+      <div class="result-item active" onclick="loadDoc()">
+        <div class="result-doc">Cardiología Adulto</div>
+        <div class="result-page">Página 5</div>
+        <div class="result-excerpt">
+          <mark>Criterios de derivación</mark> al nivel secundario: pacientes con ICC clase NYHA III-IV refractaria a tratamiento...
+        </div>
+      </div>
+
+      <!-- Resultado 2 -->
+      <div class="result-item">
+        <div class="result-doc">Cardiología Adulto</div>
+        <div class="result-page">Página 12</div>
+        <div class="result-excerpt">
+          Evaluación previa a <mark>derivación</mark>: ECG, ecocardiograma, prueba de esfuerzo cuando esté indicada...
+        </div>
+      </div>
+
+      <!-- Resultado 3 -->
+      <div class="result-item">
+        <div class="result-doc">Manual GES 2025</div>
+        <div class="result-page">Página 34</div>
+        <div class="result-excerpt">
+          Patología <mark>cardíaca</mark> GES: Infarto agudo con SDST, insuficiencia <mark>cardíaca</mark>, fibrilación auricular...
+        </div>
+      </div>
+
+      <!-- Resultado 4 -->
+      <div class="result-item">
+        <div class="result-doc">Cardiología Adulto</div>
+        <div class="result-page">Página 8</div>
+        <div class="result-excerpt">
+          Contrarreferencia: el especialista debe devolver al paciente con indicaciones claras y control en APS a los 3 meses...
+        </div>
+      </div>
+
+      <!-- Resultado 5 -->
+      <div class="result-item">
+        <div class="result-doc">Manual GES 2025</div>
+        <div class="result-page">Página 41</div>
+        <div class="result-excerpt">
+          Tiempo máximo de espera desde <mark>derivación</mark> APS a especialidad: 120 días hábiles según GES vigente...
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- ── Doc viewer ── -->
+  <main class="doc-panel" id="doc-panel">
+
+    <!-- Estado: doc cargado -->
+    <div class="doc-header" id="doc-header">
+      <h2>Protocolo de Referencia y Contrarreferencia — Cardiología Adulto v2</h2>
+      <div class="doc-meta">
+        24 páginas · 2021 ·
+        <a href="#">Ver PDF original ↗</a>
+      </div>
+    </div>
+
+    <div class="doc-content" id="doc-content">
+
+      <div class="page-block" id="page-1">
+        <div class="page-label">Página 1</div>
+        <p>SERVICIO DE SALUD METROPOLITANO OCCIDENTE<br>
+        PROTOCOLO DE REFERENCIA Y CONTRARREFERENCIA<br>
+        CARDIOLOGÍA ADULTO — Versión 2 · 2021</p>
+        <p>Aprobado por resolución exenta N° 1.234 del 15 de marzo de 2021. Vigencia indefinida hasta nueva versión.</p>
+      </div>
+
+      <div class="page-block" id="page-2">
+        <div class="page-label">Página 2</div>
+        <h3>1. Objetivo</h3>
+        <p>Estandarizar los criterios clínicos y administrativos para la referencia de pacientes desde el nivel primario (APS) al nivel secundario (Cardiología) y viceversa, en el territorio del SSMOC.</p>
+        <h3>2. Alcance</h3>
+        <p>Aplica a todos los establecimientos APS y hospitales del SSMOC. Profesionales responsables: médicos generales, médicos familiares y cardiólogos.</p>
+      </div>
+
+      <div class="page-block" id="page-5">
+        <div class="page-label">Página 5 — coincide con tu búsqueda</div>
+        <h3>4. Criterios de Derivación al Nivel Secundario</h3>
+        <p>El médico de APS debe derivar a Cardiología cuando se presente alguno de los siguientes criterios:</p>
+        <ul>
+          <li>Insuficiencia cardíaca clase NYHA III-IV refractaria a tratamiento óptimo por 3 meses.</li>
+          <li>Sospecha de cardiopatía estructural no diagnosticada (soplo significativo, dilatación ventricular).</li>
+          <li>Arritmia sintomática no controlada (fibrilación auricular con respuesta ventricular rápida, bloqueos de alto grado).</li>
+          <li>Cardiopatía isquémica con angina clase CCS III-IV o cambios electrocardiográficos sugerentes de isquemia activa.</li>
+          <li>Síncope de etiología no aclarada después de evaluación básica.</li>
+        </ul>
+      </div>
+
+      <div class="page-block" id="page-6">
+        <div class="page-label">Página 6</div>
+        <h3>5. Estudios mínimos antes de derivar</h3>
+        <p>El médico derivador debe adjuntar en la interconsulta:</p>
+        <ul>
+          <li>ECG de 12 derivaciones reciente (no mayor a 3 meses).</li>
+          <li>Ecocardiograma transtorácico si disponible en APS.</li>
+          <li>Hemograma, función renal, electrolitos y perfil lipídico.</li>
+          <li>Lista de medicamentos actuales con dosis.</li>
+        </ul>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ── Chat ── -->
+  <aside class="chat-panel">
+
+    <div class="chat-header">
+      Asistente
+      <div class="chat-context" id="chat-context">Contexto: Cardiología Adulto</div>
+    </div>
+
+    <div class="chat-messages" id="chat-messages">
+
+      <div class="msg user">
+        <div class="msg-role">Tú</div>
+        <div class="msg-bubble">¿Cuáles son los criterios de derivación para ICC?</div>
+      </div>
+
+      <div class="msg assistant">
+        <div class="msg-role">Asistente</div>
+        <div class="msg-bubble">
+          Según el protocolo, se debe derivar a Cardiología cuando el paciente presenta
+          <strong>ICC clase NYHA III-IV refractaria a tratamiento óptimo por 3 meses</strong>.
+          <br><br>
+          Adicionalmente, considera derivar si hay sospecha de cardiopatía estructural
+          subyacente no diagnosticada.
+        </div>
+        <div class="msg-citation">📄 Cardiología Adulto · pág. 5</div>
+      </div>
+
+      <div class="msg user">
+        <div class="msg-role">Tú</div>
+        <div class="msg-bubble">¿Qué estudios debo adjuntar?</div>
+      </div>
+
+      <div class="msg assistant">
+        <div class="msg-role">Asistente</div>
+        <div class="msg-bubble">
+          Debes adjuntar en la interconsulta: ECG de 12 derivaciones reciente,
+          ecocardiograma si está disponible en APS, exámenes básicos (hemograma,
+          función renal, electrolitos, perfil lipídico) y lista de medicamentos con dosis.
+        </div>
+        <div class="msg-citation">📄 Cardiología Adulto · pág. 6</div>
+      </div>
+
+    </div>
+
+    <div class="chat-input-area">
+      <textarea placeholder="Pregunta sobre este protocolo..."></textarea>
+      <button>Enviar</button>
+    </div>
+
+  </aside>
+
+</div>
+
+</body>
+</html>

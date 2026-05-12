@@ -6,11 +6,15 @@ __pycache__/
 venv/
 .venv/
 
-# Data
+# Data — PDFs y JSONs intermedios no se necesitan en deploy
 .env
 pdfs/
-data/chroma_db/
-data/parsed/
+data/parsed/json/
+data/parsed/parsed_documents.json
+
+# chroma_db y markdowns SÍ van al repo (necesarios en Railway)
+# data/chroma_db/
+# data/parsed/markdown/
 
 # IDE
 .vscode/
