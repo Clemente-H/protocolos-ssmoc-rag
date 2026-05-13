@@ -1,4 +1,6 @@
+import logging
 import os
+import re
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -14,12 +16,22 @@ from rag.search import search
 
 load_dotenv()
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 BASE_DIR = Path(__file__).parent
 STATIC_DIR = BASE_DIR / "static"
 
 app = FastAPI(title="Protocolos SSMOC", docs_url=None, redoc_url=None)
 
 app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
+
+# Regex para limpiar referencias a imágenes locales del parser (no existen en prod)
+_IMAGE_RE = re.compile(r"!\[[^\]]*\]\([^)]*\.(jpg|jpeg|png|gif|webp|svg)[^)]*\)", re.IGNORECASE)
+
+
+def _strip_images(text: str) -> str:
+    return _IMAGE_RE.sub("", text)
 
 
 # ── Frontend ──────────────────────────────────────────────────────────────────
@@ -65,14 +77,11 @@ def api_doc(doc_id: str):
         if not md_path.exists():
             continue
         raw = md_path.read_text(encoding="utf-8")
-        # Separar por los markers "--- Página N ---" que genera parse_pdfs.py
-        import re
         blocks = re.split(r"--- Página (\d+) ---\n", raw)
-        # blocks[0] = encabezado, luego pares (num, contenido)
         i = 1
         while i + 1 < len(blocks):
             page_num = int(blocks[i])
-            content = blocks[i + 1].strip()
+            content = _strip_images(blocks[i + 1].strip())
             if content:
                 pages.append({"page": page_num, "content": content})
             i += 2
@@ -103,7 +112,11 @@ def api_chat(req: ChatRequest):
     if not doc:
         raise HTTPException(status_code=404, detail="Documento no encontrado")
 
-    chunks = retrieve_chunks(req.message, top_k=6, source_files=doc.filenames)
+    try:
+        chunks = retrieve_chunks(req.message, top_k=6, source_files=doc.filenames)
+    except Exception as e:
+        logger.error("retrieve_chunks falló: %s", e, exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Error en búsqueda vectorial: {e}")
 
     if not chunks:
         return {
@@ -111,7 +124,11 @@ def api_chat(req: ChatRequest):
             "citations": [],
         }
 
-    answer = generate_answer(req.message, chunks)
+    try:
+        answer = generate_answer(req.message, chunks)
+    except Exception as e:
+        logger.error("generate_answer falló: %s", e, exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Error al generar respuesta: {e}")
 
     citations = [
         {"page": c["page"], "source_file": c["source_file"], "score": c["score"]}
